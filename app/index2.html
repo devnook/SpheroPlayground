@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: Fixed Blockly</title>
+  <script type="text/javascript" src="scripts/blockly/blockly_compressed.js"></script>
+  <script type="text/javascript" src="scripts/blockly/blocks_compressed.js"></script>
+  <script type="text/javascript" src="scripts/blockly/msg/js/en.js"></script>
+  <script type="text/javascript" src="scripts/blockly/javascript_compressed.js"></script>
+  <script type="text/javascript" src="scripts/blockly/appengine/storage.js"></script>
+  <style>
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Blockly</h1>
+
+
+  <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
+
+  <xml id="toolbox" style="display: none">
+    <block type="controls_if"></block>
+    <block type="logic_compare"></block>
+    <block type="controls_repeat_ext"></block>
+    <block type="math_number"></block>
+    <block type="sphero_turn"></block>
+    <block type="sphero_roll"></block>
+    <block type="sphero_set_color"></block>
+    <block type="sphero_color_variable"></block>
+
+  </xml>
+
+  <button id="action">run</button>
+  <script>
+
+  //https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#92mhew
+
+Blockly.Blocks['sphero_turn'] = {
+  init: function() {
+    this.setHelpUrl('http://www.example.com/');
+    this.setColour(330);
+    this.appendDummyInput()
+        .appendField("turn")
+        .appendField(new Blockly.FieldDropdown([["right", "right"], ["left", "left"]]), "direction");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip('');
+  }
+};
+
+Blockly.JavaScript['sphero_turn'] = function(block) {
+  var direction = block.getFieldValue('direction');
+  // TODO: Assemble JavaScript into code variable.
+  var code = 'ball.turn(\'' + direction + '\'); \n';
+  return code;
+};
+
+
+//https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#8kpubs
+
+Blockly.Blocks['sphero_roll'] = {
+  init: function() {
+    this.setHelpUrl('http://www.example.com/');
+    this.setColour(330);
+    this.appendDummyInput()
+        .appendField("roll");
+    this.appendValueInput("steps")
+        .setCheck("Number");
+    this.appendDummyInput()
+        .appendField("steps")
+        .appendField(new Blockly.FieldDropdown([["forward", "forward"], ["backward", "backward"], ["", ""]]), "direction");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip('');
+  }
+};
+
+Blockly.JavaScript['sphero_roll'] = function(block) {
+  var steps = Blockly.JavaScript.valueToCode(block, 'steps', Blockly.JavaScript.ORDER_ATOMIC);
+  var direction = block.getFieldValue('direction');
+  // TODO: Assemble JavaScript into code variable.
+  var code = 'ball.roll(' + steps + ', \'' + direction + '\'); \n';
+  return code;
+};
+
+//https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#4dmg2h
+
+Blockly.Blocks['sphero_set_color'] = {
+  init: function() {
+    this.setHelpUrl('http://www.example.com/');
+    this.setColour(330);
+    this.appendDummyInput()
+        .appendField("set color to")
+        .appendField(new Blockly.FieldAngle("270"), "color");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip('');
+  }
+};
+
+Blockly.JavaScript['sphero_set_color'] = function(block) {
+  var angle_color = block.getFieldValue('color');
+  // TODO: Assemble JavaScript into code variable.
+  var code = 'color = ' + angle_color + ';\n' +
+      'ball.setColor(color);\n';
+  return code;
+};
+
+Blockly.Blocks['sphero_color_variable'] = {
+  init: function() {
+    this.setHelpUrl('http://www.example.com/');
+    this.setColour(330);
+    this.appendDummyInput()
+        .appendField("color");
+    this.setOutput(true);
+    this.setTooltip('');
+  }
+};
+
+Blockly.JavaScript['sphero_color_variable'] = function(block) {
+  // TODO: Assemble JavaScript into code variable.
+  var code = 'color';
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.JavaScript.ORDER_NONE];
+};
+
+
+    Blockly.inject(document.getElementById('blocklyDiv'),
+        {toolbox: document.getElementById('toolbox')});
+
+    var btn = document.querySelector('#action');
+
+    btn.addEventListener('click', function() {
+      var code = 'var color;\nvar myBall = new Ball();\n'
+
+      code += Blockly.JavaScript.workspaceToCode();
+      console.log(code);
+      var blocks = Blockly.mainWorkspace.getTopBlocks(true);
+      console.log(Blockly.getMainWorkspace());
+      //Blockly.mainWorkspace.addTopBlock(blocks[0])
+      //Blockly.mainWorkspace.render()
+      var xml = Blockly.Xml.workspaceToDom(Blockly.getMainWorkspace());
+  var data = Blockly.Xml.domToText(xml);
+  console.log(data);
+
+    var xml = Blockly.Xml.textToDom(data);
+    Blockly.Xml.domToWorkspace(Blockly.getMainWorkspace(), xml);
+    console.log(Blockly.JavaScript.workspaceToCode())
+
+
+
+    })
+  </script>
+
+</body>
+</html>

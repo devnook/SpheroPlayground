@@ -20,7 +20,7 @@
     <!-- Tile icon for Win8 (144x144 + tile color) -->
     <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
     <meta name="msapplication-TileColor" content="#3372DF">
-    
+
     <meta name="theme-color" content="#3372DF">
 
     <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
@@ -30,35 +30,31 @@
 
     <!-- Page styles -->
     <link rel="stylesheet" href="styles/main.css">
+
+    <script src="scripts/blockly/blockly_compressed.js"></script>
+    <script src="scripts/blockly/blocks_compressed.js"></script>
+
   </head>
   <body>
-    <header class="app-bar promote-layer">
-      <div class="app-bar-container">
-        <button class="menu"><img src="images/hamburger.svg" alt="Menu"></button>
-        <h1 class="logo">Web <strong>Starter Kit</strong></h1>
-        <section class="app-bar-actions">
-        <!-- Put App Bar Buttons Here -->
-        <!-- e.g <button><i class="icon icon-star"></i></button> -->
-        </section>
-      </div>
-    </header>
+    <xml id="toolbox" >
+  <block type="controls_if"></block>
+  <block type="controls_repeat_ext"></block>
+  <block type="logic_compare"></block>
+  <block type="math_number"></block>
+  <block type="math_arithmetic"></block>
+  <block type="text"></block>
+  <block type="text_print"></block>
+</xml>
 
-    <nav class="navdrawer-container promote-layer">
-      <h4>Navigation</h4>
-      <ul>
-        <li><a href="#hello">Hello</a></li>
-        <li><a href="#get-started">Get Started</a></li>
-        <li><a href="styleguide.html">Style Guide</a></li>
-      </ul>
-    </nav>
+    <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
 
-    <main>
-      <h1 id="hello">Hello!</h1>
-      <p>Welcome to Web Starter Kit.</p>
+    <div id="toolbox" style="height: 480px; width: 600px;"></div>
 
-      <h2 id="get-started">Get Started.</h2>
-      <p>Read how to <a href="https://developers.google.com/web/starter-kit">Get Started</a> or check out the <a href="styleguide.html">Style Guide</a>.</p>
-    </main>
+    <script>
+  Blockly.inject(document.getElementById('blocklyDiv'),
+      {toolbox: document.getElementById('toolbox')});
+</script>
+
 
     <!-- build:js scripts/main.min.js -->
     <script src="scripts/main.js"></script>

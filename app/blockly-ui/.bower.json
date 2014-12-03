@@ -1,0 +1,37 @@
+{
+  "name": "seed-element",
+  "version": "0.1.2",
+  "authors": [
+    "Anonymous <anonymous@example.com>"
+  ],
+  "description": "Element providing solution to no problem in particular.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "seed"
+  ],
+  "main": "seed-element.html",
+  "license": "MIT",
+  "homepage": "https://github.com/<USERNAME>/seed-element/",
+  "ignore": [
+    "/.*",
+    "/tests/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.5.1"
+  },
+  "devDependencies": {
+    "web-component-tester": "Polymer/web-component-tester#^2.0.0-rc1"
+  },
+  "_release": "0.1.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.2",
+    "commit": "67e2e579e25751499a369f819eca0eb8a4521ba1"
+  },
+  "_source": "git://github.com/PolymerLabs/seed-element.git",
+  "_target": "~0.1.2",
+  "_originalSource": "PolymerLabs/seed-element",
+  "_direct": true
+}

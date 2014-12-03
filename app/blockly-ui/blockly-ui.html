@@ -1,0 +1,337 @@
+<!--
+    @license
+    Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+    Code distributed by Google as part of the polymer project is also
+    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+
+
+
+
+<!--
+Element providing solution to no problem in particular.
+
+##### Example
+
+    <blockly-ui></blockly-ui>
+
+@element blockly-ui
+@blurb Element providing solution to no problem in particular.
+@status alpha
+@homepage http://polymerlabs.github.io/blockly-ui
+-->
+
+<script type="text/javascript" src="../scripts/blockly/blockly_compressed.js"></script>
+<script type="text/javascript" src="../scripts/blockly/blocks_compressed.js"></script>
+<script type="text/javascript" src="../scripts/blockly/javascript_compressed.js"></script>
+<script type="text/javascript" src="../scripts/blockly/msg/js/en.js"></script>
+<script type="text/javascript" src="sphero_blocks.js"></script>
+<script type="text/javascript" src="sphero_ball.js"></script>
+
+<polymer-element name="sphero-ball" attributes="">
+
+  <template>
+  <core-ajax id="roll"
+      method="POST"
+      contentType="application/json"></core-ajax>
+
+</template>
+<script>
+Polymer({
+      /**
+       * The `author` attribute sets an initial author
+       *
+       * @attribute author
+       * @type string
+       * @default 'Dimitri Glazkov'
+       */
+
+  roll: function(steps, direction) {
+    this.sendRequest_('/roll', {
+        units: steps,
+        direction: direction
+    });
+  },
+
+  turn: function(direction) {
+    this.sendRequest_('/turn', { direction: direction });
+  },
+
+  setColor: function(color) {
+    this.sendRequest_('/color', { color: color });
+  },
+
+  sendRequest_: function(url, content) {
+    this.$.roll.url = url;
+    this.$.roll.body = JSON.stringify(content);
+    this.$.roll.go();
+  }
+
+});
+
+</script>
+</polymer-element>
+
+<polymer-element name="blockly-ui" attributes="notitle author">
+
+  <template>
+
+    <link rel="stylesheet" href="blockly-ui.css">
+    <style>
+
+      :host {
+        width: 100%;
+      }
+
+      .blocklyFlyoutBackground {
+        fill: #CFD8DC;
+
+      }
+
+      .blocklyPathLight, .blocklyPathDark {
+        display: none;
+      }
+
+
+
+      .blocklyPath {
+        stroke: #CFD8DC;
+        stroke-width: 1px;
+      }
+
+      .blocklySelected > .blocklyPath {
+        stroke: #fff;
+        stroke-width: 2px;
+      }
+
+      .blocklyEditableText {
+        fill: #FFF;
+        opacity: 0.5;
+      }
+
+      .blocklyText {
+        fill: #000;
+      }
+
+      .blocklyIconShield {
+        fill: #fff;
+        opacity: 0.7;
+      }
+
+      .blocklyIconMark {
+        display:none;
+      }
+
+      .blocklyMutatorBackground {
+        fill: #BBDEFB;
+      }
+
+      .blocklyHighlightedConnectionPath {
+        fill: #fff;
+        opacity: 0.7;
+      }
+
+      #blockly {
+        background-color: #90CAF9;
+        background-color: #BBDEFB;
+        background-color: #777;
+        background-color: #B0BEC5;
+        height: 100%;
+      }
+
+      #blockly-wrapper {
+        width: 60%;
+        height: 480px;
+      }
+
+      #editor {
+        width: 100%;
+        display: flex;
+        position: relative;
+      }
+
+      #code-wrapper {
+        width: 40%;
+        height: 480px;
+        background-color: #fff;
+      }
+
+      #code {
+
+        height: 100%;
+      }
+
+      pre {
+        margin: 0;
+        padding: 1em;
+        overflow-x: auto;
+        height: 100%;
+        box-sizing: border-box;
+      }
+
+      paper-fab {
+        position: absolute;
+        bottom: -28px;
+        right: 28px;
+      }
+
+      @media (max-width: 800px) {
+        #editor {
+          display: block;
+        }
+        #code-wrapper, #blockly-wrapper {
+          width: 100%;
+        }
+      }
+    </style>
+
+    <p>A paragraph explaining what the user can do.</p>
+    <content></content>
+    <sphero-ball id="ball"></sphero-ball>
+
+    <div id="editor">
+    <paper-shadow id="blockly-wrapper" z="1">
+    <div id="blockly"></div>
+    </paper-shadow>
+    <paper-shadow id="code-wrapper" z="1">
+    <div id="code">
+      <pre>{{code}}
+      </pre>
+    </div>
+    </paper-shadow>
+    <paper-fab on-click="{{run}}" icon="arrow-forward"></paper-fab>
+    </div>
+
+
+
+
+
+
+    <xml id="toolbox" >
+      <block type="controls_if"></block>
+      <block type="controls_repeat_ext"></block>
+      <block type="logic_compare"></block>
+      <block type="math_number"></block>
+      <block type="sphero_roll"></block>
+      <block type="sphero_turn"></block>
+      <block type="sphero_set_color"></block>
+    </xml>
+
+
+
+  </template>
+
+  <script>
+
+    // Hack to cheat Shadow DOM.
+    goog.dom.contains = function() {
+      return true;
+    };
+
+    function configureBlockColor(blockName, hue) {
+      var oldInit =  Blockly.Blocks[blockName].init;
+      Blockly.Blocks[blockName].init = function() {
+          oldInit.bind(this)();
+          this.setColour(hue);
+        };
+    };
+
+
+    Polymer({
+      /**
+       * The `author` attribute sets an initial author
+       *
+       * @attribute author
+       * @type string
+       * @default 'Dimitri Glazkov'
+       */
+      author: 'Dimitri Glazkov',
+
+      /**
+       * `fancy` is a property that does something fancy.
+       *
+       * @property fancy
+       * @type bool
+       * @default false
+       */
+      code: '',
+
+      attached: function() {
+        Blockly.HSV_SATURATION = 1;
+        Blockly.HSV_VALUE = 0.75;
+        //configureBlockColor('text_print', 340); // pink
+        //configureBlockColor('math_number', 330); // blue
+        console.log(Blockly.Blocks.text.init)
+        configureBlockColor('controls_if', 188); // pink
+        configureBlockColor('controls_repeat_ext', 188); // cyan
+        configureBlockColor('logic_compare', 172); // teal
+
+        configureBlockColor('logic_compare', 66); // lime
+        configureBlockColor('math_number', 66); // lime
+        configureBlockColor('sphero_roll', 172); // lime
+        configureBlockColor('sphero_turn', 172); // lime
+        configureBlockColor('sphero_set_color', 172); // lime
+        Blockly.inject(this.$.blockly,
+                {toolbox: this.$.toolbox});
+        Blockly.addChangeListener(this.update.bind(this));
+      },
+
+      update: function() {
+        this.code = 'var color;\nvar ball = new Sphero.Ball();\nconsole.log(ball);\n' +
+            Blockly.JavaScript.workspaceToCode();
+        console.log(this.code)
+      },
+
+      /**
+       * The `sayHello` method will return a greeting.
+       *
+       * @method sayHello
+       * @param {String} greeting Pass in a specific greeting.
+       * @return {String} Returns a string greeting.
+       */
+      run: function() {
+        //var xml = Blockly.Xml.workspaceToDom(Blockly.getMainWorkspace());
+        //var data = Blockly.Xml.domToText(xml);
+        Blockly.JavaScript.addReservedWords('code');
+        var ball = this.$.ball;
+        var code = Blockly.JavaScript.workspaceToCode();
+        try {
+          // TODO: consider security.
+          eval(code);
+        } catch (e) {
+          console.log(e);
+        }
+      },
+
+      /**
+       * The `blockly-ui-lasers-success` event is fired whenever we
+       * call fireLasers.
+       *
+       * @event blockly-ui-lasers-success
+       * @param {Object} detail
+       *   @param {string} detail.sound An amazing sound.
+       */
+
+      /**
+       * The `fireLasers` method will fire the lasers. At least
+       * it will dispatch an event that claims lasers were fired :)
+       *
+       * @method fireLasers
+       */
+      fireLasers: function() {
+        this.fire('blockly-ui-lasers-success', { sound: 'Pew pew pew!' });
+      }
+
+    });
+
+  </script>
+
+</polymer-element>

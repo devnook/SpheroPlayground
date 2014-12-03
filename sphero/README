@@ -1,0 +1,16 @@
+To run the server
+
+- Install node
+- Install required packages
+  > npm install cylon-sphero
+  > npm install director
+- Run server
+  > node sphero_server.js <port>
+ (I'm using 8080 for all examples)
+
+ To test examples
+ - Install the Postman chrome extension
+ - Using postman, import the collection under test_page/Sphero.json.postman_collection
+ - Browse through the list for examples of requests that work with the server
+
+ TBD: Write a simple html test page with buttons that will send the requests.

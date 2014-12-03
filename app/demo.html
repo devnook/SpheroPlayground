@@ -1,0 +1,51 @@
+<!--
+    @license
+    Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+    Code distributed by Google as part of the polymer project is also
+    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>blockly-ui Demo</title>
+
+  <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+
+  <link rel="import"
+    href="bower_components/font-roboto/roboto.html">
+  <link rel="import"
+    href="bower_components/core-header-panel/core-header-panel.html">
+  <link rel="import"
+    href="bower_components/core-toolbar/core-toolbar.html">
+  <link rel="import"
+    href="bower_components/paper-tabs/paper-tabs.html">
+
+
+  <link rel="import" href="blockly-ui/blockly-ui.html">
+  <link rel="stylesheet" href="app.css">
+
+</head>
+
+<body unresolved fullbleed layout vertical>
+  <core-header-panel flex>
+
+    <core-toolbar>
+      Sphero Play
+    </core-toolbar>
+
+    <div class="container" layout vertical center>
+
+      <blockly-ui></blockly-ui>
+
+    </div>
+
+  </core-header-panel>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
