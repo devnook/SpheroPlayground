@@ -19,7 +19,7 @@ var router = new Director.http.Router({
 startSpheroDriver();
 function startSpheroDriver() {
 	var port = Number(process.argv[2]);
-//	SpheroDriver.start();
+	SpheroDriver.start();
 	var server = Http.createServer(spheroServerDispatch);
 	console.log("Listening on port " + port)
 	server.listen(port);
@@ -62,21 +62,21 @@ function spheroRoll() {
   var units = params.units;
   var direction = params.direction;
   console.log("Roll " + units + " units in direction " + direction);
-//	SpheroDriver.roll(units, direction);
+	SpheroDriver.roll(units, direction);
   endOk(this.res);
 }
 
 function spheroColor() {
   var color = this.req.body.color;
   console.log("Set color to " + color);
-//  SpheroDriver.setColor(color);
+  SpheroDriver.setColor(color);
   endOk(this.res);
 }
 
 function spheroTurn() {
   var direction = this.req.body.direction;
   console.log("Turning to the " + direction);
-// SpheroDriver.turn(direction)
+ SpheroDriver.turn(direction)
   endOk(this.res);
 }
 

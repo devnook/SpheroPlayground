@@ -66,7 +66,23 @@ Polymer({
   },
 
   setColor: function(color) {
-    this.sendRequest_('/color', { color: color });
+
+    var COLOURS = {
+          '#ff0000': 'red',
+          '#4169e1':  'royalblue',
+          '#00ff7f': 'springgreen',
+          '#ffff00': 'yellow',
+          '#191970': 'midnightblue',
+          '#c71585': 'mediumvioletred',
+          '#adff2f': 'greenyellow'
+
+        };
+
+
+    colorName = COLOURS[color];
+        console.log(color, colorName)
+
+    this.sendRequest_('/color', { color: colorName });
   },
 
   sendRequest_: function(url, content) {
@@ -149,7 +165,7 @@ Polymer({
 
       #blockly-wrapper {
         width: 60%;
-        height: 480px;
+        height: 560px;
       }
 
       #editor {
@@ -160,7 +176,7 @@ Polymer({
 
       #code-wrapper {
         width: 40%;
-        height: 480px;
+        height: 560px;
         background-color: #fff;
       }
 
@@ -223,6 +239,7 @@ Polymer({
       <block type="sphero_roll"></block>
       <block type="sphero_turn"></block>
       <block type="sphero_set_color"></block>
+      <block type="colour_picker"></block>
     </xml>
 
 
@@ -267,6 +284,30 @@ Polymer({
       attached: function() {
         Blockly.HSV_SATURATION = 1;
         Blockly.HSV_VALUE = 0.75;
+
+        var COLOURS = {
+          '#ff0000': 'red',
+          '#4169e1':  'royalblue',
+          '#00ff7f': 'springgreen',
+          '#ffff00': 'yellow',
+          '#191970': 'midnightblue',
+          '#c71585': 'mediumvioletred',
+          '#adff2f': 'greenyellow'
+
+        };
+
+        Blockly.FieldColour.COLOURS = [
+          '#FF0000',  // red
+          '#4169E1',  // royalblue
+          '#00FF7F', // springgreen
+          '#FFFF00', // yellow
+          '#191970', // midnightblue
+          '#c71585',  // mediumvioletred
+          '#adff2f' // greenyellow
+
+        ];
+
+
         //configureBlockColor('text_print', 340); // pink
         //configureBlockColor('math_number', 330); // blue
         console.log(Blockly.Blocks.text.init)
