@@ -75,8 +75,8 @@ function spheroColor() {
 
 function spheroTurn() {
   var direction = this.req.body.direction;
-  console.log("Turning to the " + direction);
- SpheroDriver.turn(direction)
+  console.log("Turning " + direction);
+  SpheroDriver.turn(direction)
   endOk(this.res);
 }
 
