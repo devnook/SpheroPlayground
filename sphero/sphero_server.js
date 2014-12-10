@@ -70,15 +70,17 @@ function spheroRoll() {
 function spheroColor() {
   var color = this.req.body.color;
   console.log("Set color to " + color);
-  SpheroDriver.setColor(color);
-  endOk(this.res);
+  SpheroDriver.setColor(color, function() {
+    endOk(this.res);
+  }.bind(this));
 }
 
 function spheroTurn() {
   var direction = this.req.body.direction;
   console.log("Turning " + direction);
-  SpheroDriver.turn(direction)
-  endOk(this.res);
+  SpheroDriver.turn(direction, function() {
+    endOk(this.res);
+  }.bind(this));
 }
 
 function endOk(response) {
