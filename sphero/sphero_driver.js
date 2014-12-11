@@ -30,6 +30,14 @@ Cylon.robot({
 
   work: function(my) {
     console.log('Setting up collision detection.');
+    my.sphero.detectCollisions();
+    my.sphero.on('collision', function() {
+      console.log("Ouch, collision!")
+      my.sphero.setColor('purple');
+      my.sphero.stop();
+      my.markCollision();
+    });
+
     var black = true;
     every((0.5).second(), function(){
       if (!my.amIRolling()) {
@@ -103,14 +111,29 @@ Cylon.robot({
     after((units).seconds(), function() {
       console.log("Sphero stopping after " + units + " seconds");
       this.stop();
-      callback(null, {'message': "Sphero rolled " + units + " units " + direction});
+      var justHitSomething = this.hitSomething;
+      this.clearCollision();
+      message = "Sphero rolled " + units + " units " + direction;
+      if (justHitSomething) message = message + " but hit something on the way";
+      callback(null, {
+        'message': message,
+        'collision': justHitSomething,
+      });
     }.bind(this));
   },
 
   stop: function() {
     this.sphero.roll(0, this.myAngle, 0);
     this.stoppedRolling();
-  }
+  },
+
+  hitSomething: false,
+  markCollision: function() {
+    this.hitSomething = true;
+  },
+  clearCollision: function() {
+    this.hitSomething = false;
+  },
 });
 
 function spheroStart() {
