@@ -12,6 +12,7 @@
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../bower_components/paper-shadow/paper-shadow.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 
 
 
@@ -36,13 +37,15 @@ Element providing solution to no problem in particular.
 <script type="text/javascript" src="sphero_blocks.js"></script>
 <script type="text/javascript" src="sphero_ball.js"></script>
 
-<polymer-element name="sphero-ball" attributes="">
+<polymer-element name="sphero-ball" attributes="collisions">
 
   <template>
-  <core-ajax id="roll"
+  <core-ajax id="api"
       method="POST"
-      contentType="application/json"></core-ajax>
-
+      contentType="application/json"
+      handleAs="json"
+      on-core-response="{{onResponse_}}"></core-ajax>
+  <paper-toast id="toast" text="hello"></paper-toast>
 </template>
 <script>
 Polymer({
@@ -53,6 +56,7 @@ Polymer({
        * @type string
        * @default 'Dimitri Glazkov'
        */
+  collisions: 0,
 
   roll: function(steps, direction) {
     this.sendRequest_('/roll', {
@@ -86,9 +90,18 @@ Polymer({
   },
 
   sendRequest_: function(url, content) {
-    this.$.roll.url = url;
-    this.$.roll.body = JSON.stringify(content);
-    this.$.roll.go();
+    this.$.api.url = url;
+    this.$.api.body = JSON.stringify(content);
+    this.$.api.go();
+  },
+
+  onResponse_: function(e) {
+
+    this.$.toast.text = e.detail.response.message ||
+        e.detail.response.error;
+    this.$.toast.show();
+    this.collisions += 1;
+
   }
 
 });
@@ -209,9 +222,9 @@ Polymer({
       }
     </style>
 
-    <p>A paragraph explaining what the user can do.</p>
+    <p>Collisions: {{collisions || 0}}</p>
     <content></content>
-    <sphero-ball id="ball"></sphero-ball>
+    <sphero-ball id="ball" collisions="{{collisions}}"></sphero-ball>
 
     <div id="editor">
     <paper-shadow id="blockly-wrapper" z="1">
@@ -272,6 +285,8 @@ Polymer({
        */
       author: 'Dimitri Glazkov',
 
+      collisions: 0,
+
       /**
        * `fancy` is a property that does something fancy.
        *
@@ -310,7 +325,6 @@ Polymer({
 
         //configureBlockColor('text_print', 340); // pink
         //configureBlockColor('math_number', 330); // blue
-        console.log(Blockly.Blocks.text.init)
         configureBlockColor('controls_if', 188); // pink
         configureBlockColor('controls_repeat_ext', 188); // cyan
         configureBlockColor('logic_compare', 172); // teal
@@ -326,7 +340,7 @@ Polymer({
       },
 
       update: function() {
-        this.code = 'var color;\nvar ball = new Sphero.Ball();\nconsole.log(ball);\n' +
+        this.code = 'var color;\nvar ball;\n\n' +
             Blockly.JavaScript.workspaceToCode();
         console.log(this.code)
       },
