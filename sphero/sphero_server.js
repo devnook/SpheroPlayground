@@ -6,10 +6,8 @@ var nodeStatic = require('node-static');
 
 var fileServer = new nodeStatic.Server('../app');
 
-
 var router = new Director.http.Router({
     '/help': {get: printRouter},
-//    '/stop': {post: spheroStop},
     '/roll': {post: spheroRoll},
     '/color': {post: spheroColor},
     '/turn': {post: spheroTurn},
@@ -19,10 +17,11 @@ var router = new Director.http.Router({
 startSpheroDriver();
 function startSpheroDriver() {
 	var port = Number(process.argv[2]);
-	SpheroDriver.start();
-	var server = Http.createServer(spheroServerDispatch);
-	console.log("Listening on port " + port)
-	server.listen(port);
+  var server = Http.createServer(spheroServerDispatch);
+	SpheroDriver.startAndDoWhenReady(function() {
+    console.log("Listening on port " + port)
+    server.listen(port);
+  });
 }
 
 function spheroServerDispatch(req, res) {
@@ -62,22 +61,26 @@ function spheroRoll() {
   var units = params.units;
   var direction = params.direction;
   console.log("Roll " + units + " units in direction " + direction);
-	SpheroDriver.roll(units, direction);
-  endOk(this.res);
+  var response = this.res;
+	SpheroDriver.roll(units, direction, function() {
+    endOk(response);
+  });
 }
 
 function spheroColor() {
   var color = this.req.body.color;
   console.log("Set color to " + color);
-  SpheroDriver.setColor(color);
-  endOk(this.res);
+  SpheroDriver.setColor(color, function() {
+    endOk(this.res);
+  }.bind(this));
 }
 
 function spheroTurn() {
   var direction = this.req.body.direction;
   console.log("Turning " + direction);
-  SpheroDriver.turn(direction)
-  endOk(this.res);
+  SpheroDriver.turn(direction, function() {
+    endOk(this.res);
+  }.bind(this));
 }
 
 function endOk(response) {
