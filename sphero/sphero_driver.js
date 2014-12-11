@@ -1,6 +1,5 @@
 exports.start = spheroStart;
 exports.startAndDoWhenReady = spheroStartAndDoWhenReady;
-exports.stop = spheroStop;
 exports.roll = spheroRoll;
 exports.setColor = spheroSetColor;
 exports.turn = spheroTurn;
@@ -60,32 +59,37 @@ Cylon.robot({
     this.rolling = false;
   },
 
-  setColor: function(color) {
+  setColor: function(color, callback) {
     console.log("Sphero changing to color " + color);
     this.myColor = color;
-    this.stop();
+    callback(null, {'message': "Sphero changed to color " + color});
   },
 
-  turn: function(direction) {
+  turn: function(direction, callback) {
     if (direction == "left") {
       this.myAngle += 270;
     } else if (direction == "right") {
       this.myAngle += 90;
     } else {
-      console.error("Sphero can't turn in direction " + direction
-        + ". It only understands left and right.");
+      var message = "Sphero can't turn in direction " + direction
+        + ". It only understands left and right.";
+      console.error(message);
+      callback(message, null);
       return;
     }
 
     if (this.myAngle >= 360) this.myAngle -= 360;
     console.log("Sphero turning " + direction + ", will roll at " + this.myAngle + " degrees");
-    this.stop();
+    this.sphero.roll(0, this.myAngle, 0);
+    callback(null, {'message': "Sphero turned " + direction});
   },
 
   roll: function(units, direction, callback) {
     if (direction != "forward" && direction != "backward") {
-     console.error("Sphero can't roll in direction " + direction
-        + ". It only understands forward and backward.");
+      var errorMessage = "Sphero can't roll in direction " + direction
+        + ". It only understands forward and backward.";
+      console.error(errorMessage);
+      callback(errorMessage, null);
       return;
     }
     var rollAngle = direction == "forward" ? this.myAngle : (this.myAngle + 180);
@@ -98,23 +102,15 @@ Cylon.robot({
     after((units).seconds(), function() {
       console.log("Sphero stopping after " + units + " seconds");
       this.stop();
-      this.stoppedRolling();
-      callback.call();
+      callback(null, {'message': "Sphero rolled " + units + " units " + direction});
     }.bind(this));
   },
 
   stop: function() {
-    console.log("Sphero stopping");
     this.sphero.roll(0, this.myAngle, 0);
-    queue.shift();
-
-    if (queue.length) {
-      queue[0].handler.apply(Cylon.robots[ROBOT_NAME], queue[0].params);
-    }
+    this.stoppedRolling();
   }
 });
-
-var queue = [];
 
 function spheroStart() {
   Cylon.robots[ROBOT_NAME].on('ready', function() {
@@ -127,7 +123,7 @@ function spheroStartAndDoWhenReady(callback) {
   spheroStart();
   callbackWhenReady = function() {
     if (spheroReady) {
-      callback.call();
+      callback();
     } else {
       console.log("SpheroDriver not ready, waiting a sec...");
       setTimeout(function() {callbackWhenReady.call()}, 1000);
@@ -136,49 +132,19 @@ function spheroStartAndDoWhenReady(callback) {
   callbackWhenReady();
 }
 
-function spheroStop() {
-  Cylon.robots[ROBOT_NAME].stop();
-}
-
 function spheroRoll(units, direction, callback) {
-  //Cylon.robots[ROBOT_NAME].roll(units, direction);
-  console.log(JSON.stringify(queue))
-
-  queue.push({
-    'handler': Cylon.robots[ROBOT_NAME].roll,
-    'params': [units, direction, callback]
-  });
-  console.log('spheroRoll', queue);
-  if (queue.length == 1) {
-    queue[0].handler.apply(Cylon.robots[ROBOT_NAME], queue[0].params);
-  }
-
+  console.log('Requested roll ' + units + " units " + direction);
+  enqueue(Cylon.robots[ROBOT_NAME].roll, [units, direction, callback]);
 }
 
-function spheroSetColor(color) {
-  //Cylon.robots[ROBOT_NAME].setColor(color);
-
-  queue.push({
-    'handler': Cylon.robots[ROBOT_NAME].setColor,
-    'params': [color]
-  });
-  console.log('spheroSetColor queue', queue);
-  if (queue.length == 1) {
-    queue[0].handler.apply(Cylon.robots[ROBOT_NAME], queue[0].params);
-  }
+function spheroSetColor(color, callback) {
+  console.log('Requested set color to ' + color);
+  enqueue(Cylon.robots[ROBOT_NAME].setColor, [color, callback]);
 }
 
-function spheroTurn(direction) {
-  //Cylon.robots[ROBOT_NAME].turn(direction)
-
-  queue.push({
-    'handler': Cylon.robots[ROBOT_NAME].turn,
-    'params': [direction]
-  });
-  console.log('spheroturn queue', queue);
-  if (queue.length == 1) {
-    queue[0].handler.apply(Cylon.robots[ROBOT_NAME], queue[0].params);
-  }
+function spheroTurn(direction, callback) {
+  console.log('Requested turn ' + direction);
+  enqueue(Cylon.robots[ROBOT_NAME].turn, [direction, callback]);
 }
 
 function restart() {
@@ -190,3 +156,36 @@ function restart() {
 function isReady() {
   return spheroReady;
 }
+
+var commandQueue = [];
+var busy = false;
+var pause_ms = 300;
+
+function enqueue(handler, params) {
+  commandQueue.push({
+    'handler': handler,
+    'params': params
+  });
+}
+
+function processQueue() {
+  if (!busy) {
+    busy = true;
+    var nextCommand = commandQueue.shift();
+    if (nextCommand != null) {
+      setTimeout(function() {
+        var originalCallback = nextCommand.params.pop();
+        var queuedCallback = function(err, data) {
+          originalCallback(err, data);
+          busy = false;
+        };
+        nextCommand.params.push(queuedCallback);
+        nextCommand.handler.apply(Cylon.robots[ROBOT_NAME], nextCommand.params);
+      }, pause_ms);
+    } else {
+      busy = false;
+    }
+  }
+}
+
+setInterval(processQueue, 500);

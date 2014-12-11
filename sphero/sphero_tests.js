@@ -1,48 +1,21 @@
 var SpheroDriver = require('./sphero_driver.js');
 
+logResult = function(err, data) {
+	console.log("Test reads: " + data.message);
+}
+
+// Draws a square and turns pink
 work = function() {
-	setTimeout(function() {
-		console.log("I want to change the color");
-		SpheroDriver.setColor('darkgreen');
-	}, 6000);
-
-	setTimeout(function() {
-		console.log("I want to roll");
-		SpheroDriver.roll(2, "forward");	
-		setTimeout(function() {
-			console.log("I want to turn");
-			SpheroDriver.turn("left");	
-			setTimeout(function() {
-				console.log("I want to roll");
-				SpheroDriver.roll(2, "forward");	
-				setTimeout(function() {
-					console.log("I want to turn");
-					SpheroDriver.turn("left");	
-					setTimeout(function() {
-						console.log("I want to roll");
-						SpheroDriver.roll(2, "forward");	
-						setTimeout(function() {
-							console.log("I want to turn");
-							SpheroDriver.turn("left");	
-							setTimeout(function() {
-								console.log("I want to roll");
-								SpheroDriver.roll(2, "forward");	
-								setTimeout(function() {
-									console.log("I want to turn");
-									SpheroDriver.turn("left");	
-								}, 2000);
-							}, 2000);
-						}, 2000);
-					}, 2000);
-				}, 2000);
-			}, 2000);
-		}, 2000);
-	}, 13000);
-
-	setTimeout(function() {
-  	console.log("Done!");
-	}, 20000)
-};
+	SpheroDriver.roll(2, "forward", logResult);
+	SpheroDriver.turn("left", logResult);
+	SpheroDriver.roll(2, "forward", logResult);
+	SpheroDriver.turn("left", logResult);
+	SpheroDriver.roll(2, "forward", logResult);
+	SpheroDriver.turn("left", logResult);
+	SpheroDriver.roll(2, "forward", logResult);
+	SpheroDriver.turn("left", logResult);
+	SpheroDriver.setColor("pink", logResult);
+}
 
 SpheroDriver.start();
 canStartTest = false;
