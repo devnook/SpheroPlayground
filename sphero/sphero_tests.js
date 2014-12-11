@@ -1,7 +1,7 @@
 var SpheroDriver = require('./sphero_driver.js');
 
 logResult = function(err, data) {
-	console.log("Test reads: " + data.message);
+	console.log("Test reads: " + JSON.stringify(data));
 }
 
 // Draws a square and turns pink
