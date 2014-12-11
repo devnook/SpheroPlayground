@@ -29,16 +29,17 @@ Cylon.robot({
   rolling : false,
 
   work: function(my) {
-    var white = true;
+    console.log('Setting up collision detection.');
+    var black = true;
     every((0.5).second(), function(){
       if (!my.amIRolling()) {
         var color = my.readMyColor();
-        if (white) {
-          my.sphero.setColor('white');
+        if (black) {
+          my.sphero.setColor('black');
         } else {
           my.sphero.setColor(color);
         }
-        white = !white
+        black = !black
       }
     });
   },
