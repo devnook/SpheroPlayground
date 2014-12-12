@@ -90,18 +90,19 @@ Polymer({
   },
 
   sendRequest_: function(url, content) {
+    this.$.api.xhrArgs = {sync: true};
     this.$.api.url = url;
     this.$.api.body = JSON.stringify(content);
     this.$.api.go();
+    console.log('request')
   },
 
   onResponse_: function(e) {
-
+    console.log('response', e.detail, this.collisions)
     this.$.toast.text = e.detail.response.message ||
         e.detail.response.error;
     this.$.toast.show();
     this.collisions += 1;
-
   }
 
 });
@@ -222,7 +223,7 @@ Polymer({
       }
     </style>
 
-    <p>Collisions: {{collisions || 0}}</p>
+    <p>ball.collisions: {{collisions || 0}}</p>
     <content></content>
     <sphero-ball id="ball" collisions="{{collisions}}"></sphero-ball>
 
@@ -239,11 +240,6 @@ Polymer({
     <paper-fab on-click="{{run}}" icon="arrow-forward"></paper-fab>
     </div>
 
-
-
-
-
-
     <xml id="toolbox" >
       <block type="controls_if"></block>
       <block type="controls_repeat_ext"></block>
@@ -253,10 +249,9 @@ Polymer({
       <block type="sphero_turn"></block>
       <block type="sphero_set_color"></block>
       <block type="colour_picker"></block>
+      <block type="variables_get"></block>
+      <block type="controls_whileUntil"></block>
     </xml>
-
-
-
   </template>
 
   <script>
@@ -340,7 +335,7 @@ Polymer({
       },
 
       update: function() {
-        this.code = 'var color;\nvar ball;\n\n' +
+        this.code = 'var color;\nvar ball = new Ball();\n\n' +
             Blockly.JavaScript.workspaceToCode();
         console.log(this.code)
       },
@@ -357,10 +352,14 @@ Polymer({
         //var data = Blockly.Xml.domToText(xml);
         Blockly.JavaScript.addReservedWords('code');
         var ball = this.$.ball;
+        var collisions = ball.collisions;
+        //console.log(collisions)
         var code = Blockly.JavaScript.workspaceToCode();
         try {
           // TODO: consider security.
           eval(code);
+
+
         } catch (e) {
           console.log(e);
         }
