@@ -30,14 +30,13 @@ Element providing solution to no problem in particular.
 @homepage http://polymerlabs.github.io/blockly-ui
 -->
 
-<script type="text/javascript" src="../scripts/blockly/blockly_compressed.js"></script>
-<script type="text/javascript" src="../scripts/blockly/blocks_compressed.js"></script>
-<script type="text/javascript" src="../scripts/blockly/javascript_compressed.js"></script>
-<script type="text/javascript" src="../scripts/blockly/msg/js/en.js"></script>
+<script type="text/javascript" src="../scripts/blockly_compressed.js"></script>
+<script type="text/javascript" src="../scripts/blocks_compressed.js"></script>
+<script type="text/javascript" src="../scripts/javascript_compressed.js"></script>
+<script type="text/javascript" src="../scripts/en.js"></script>
 <script type="text/javascript" src="sphero_blocks.js"></script>
-<script type="text/javascript" src="sphero_ball.js"></script>
 
-<polymer-element name="sphero-ball" attributes="collisions">
+<polymer-element name="sphero-ball" attributes="collisions response">
 
   <template>
   <core-ajax id="api"
@@ -57,6 +56,7 @@ Polymer({
        * @default 'Dimitri Glazkov'
        */
   collisions: 0,
+  responseCount: 0,
 
   roll: function(steps, direction) {
     this.sendRequest_('/roll', {
@@ -96,12 +96,20 @@ Polymer({
     console.log('request')
   },
 
+
   onResponse_: function(e) {
-    console.log('response', e.detail, this.collisions)
-    this.$.toast.text = e.detail.response.message ||
-        e.detail.response.error;
-    this.$.toast.show();
-    this.collisions += 1;
+
+    if (this.responseCount == 0) {
+      this.$.toast.text = e.detail.response.message ||
+          e.detail.response.error;
+      this.$.toast.show();
+      if (e.detail.response.collision)  {
+        this.collisions += 1;
+      }
+      this.responseCount ++;
+    } else {
+      this.responseCount = 0;
+    }
   }
 
 });
@@ -123,6 +131,14 @@ Polymer({
       .blocklyFlyoutBackground {
         fill: #CFD8DC;
 
+      }
+
+      .blocklyScrollbarBackground {
+        fill: #CFD8DC;
+      }
+
+      .blocklyScrollbarKnob {
+        fill: #B0BEC5;
       }
 
       .blocklyPathLight, .blocklyPathDark {
@@ -240,16 +256,19 @@ Polymer({
     </div>
 
     <xml id="toolbox" >
+
       <block type="controls_if"></block>
       <block type="controls_repeat_ext"></block>
+      <block type="controls_whileUntil"></block>
       <block type="logic_compare"></block>
       <block type="math_number"></block>
+      <block type="colour_picker"></block>
+      <block type="sphero_collisions"></block>
       <block type="sphero_roll"></block>
       <block type="sphero_turn"></block>
       <block type="sphero_set_color"></block>
-      <block type="colour_picker"></block>
-      <block type="variables_get"></block>
-      <block type="controls_whileUntil"></block>
+
+
     </xml>
   </template>
 
@@ -321,10 +340,13 @@ Polymer({
         //configureBlockColor('math_number', 330); // blue
         configureBlockColor('controls_if', 188); // pink
         configureBlockColor('controls_repeat_ext', 188); // cyan
+        configureBlockColor('controls_whileUntil', 188); // cyan
         configureBlockColor('logic_compare', 172); // teal
 
         configureBlockColor('logic_compare', 66); // lime
         configureBlockColor('math_number', 66); // lime
+        configureBlockColor('colour_picker', 66); // lime
+        configureBlockColor('sphero_collisions', 66); // lime
         configureBlockColor('sphero_roll', 172); // lime
         configureBlockColor('sphero_turn', 172); // lime
         configureBlockColor('sphero_set_color', 172); // lime

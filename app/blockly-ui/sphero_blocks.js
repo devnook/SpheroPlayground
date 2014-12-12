@@ -96,4 +96,21 @@ Blockly.JavaScript['sphero_color_variable'] = function(block) {
   return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
+Blockly.Blocks['sphero_collisions'] = {
+  init: function() {
+    this.setHelpUrl('http://www.example.com/');
+    this.setColour(330);
+    this.appendDummyInput()
+        .appendField("ball.collisions");
+    this.setOutput(true, "Number");
+    this.setTooltip('');
+  }
+};
+
+Blockly.JavaScript['sphero_collisions'] = function(block) {
+  // TODO: Assemble JavaScript into code variable.
+  var code = 'ball.collisions';
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.JavaScript.ORDER_NONE];
+};
 
