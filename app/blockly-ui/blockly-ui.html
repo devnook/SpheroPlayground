@@ -84,7 +84,6 @@ Polymer({
 
 
     colorName = COLOURS[color];
-        console.log(color, colorName)
 
     this.sendRequest_('/color', { color: colorName });
   },
@@ -337,7 +336,6 @@ Polymer({
       update: function() {
         this.code = 'var color;\nvar ball = new Ball();\n\n' +
             Blockly.JavaScript.workspaceToCode();
-        console.log(this.code)
       },
 
       /**

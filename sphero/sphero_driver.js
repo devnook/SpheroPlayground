@@ -15,17 +15,17 @@ Cylon.robot({
   connection: {
       name: 'sphero',
       adaptor: 'sphero',
-//      port: '/dev/tty.Sphero-RYR-AMP-SPP-6'
-      port: '/dev/cu.Sphero-RRP-AMP-SPP'
+      port: '/dev/tty.Sphero-RYR-AMP-SPP'
+  //    port: '/dev/cu.Sphero-RRP-AMP-SPP'
   },
-//  device: { name: 'Sphero-RYR', driver: 'sphero' },
-  device: { name: 'Sphero-RRP', driver: 'sphero' },
+  device: { name: 'Sphero-RYR', driver: 'sphero' },
+//  device: { name: 'Sphero-RRP', driver: 'sphero' },
 
   name: ROBOT_NAME,
 
   myAngle : 0,
   myColor : 'yellow',
-  mySpeed : 60,
+  mySpeed : 250,
   rolling : false,
 
   work: function(my) {
@@ -107,7 +107,7 @@ Cylon.robot({
         + " for " + units + " seconds"
         + " in a " + rollAngle + " degree angle ");
     this.startedRolling();
-    this.sphero.roll(this.mySpeed, rollAngle, 1);
+    this.sphero.roll(this.mySpeed, rollAngle, 2);
     after((units).seconds(), function() {
       console.log("Sphero stopping after " + units + " seconds");
       this.stop();
