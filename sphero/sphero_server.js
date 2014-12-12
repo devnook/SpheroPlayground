@@ -16,9 +16,9 @@ var router = new Director.http.Router({
 
 startSpheroDriver();
 function startSpheroDriver() {
-	var port = Number(process.argv[2]);
+  var port = Number(process.argv[2]);
   var server = Http.createServer(spheroServerDispatch);
-	SpheroDriver.startAndDoWhenReady(function() {
+  SpheroDriver.startAndDoWhenReady(function() {
     console.log("Listening on port " + port)
     server.listen(port);
   });
@@ -51,39 +51,39 @@ function printRouter() {
    this.res.end();
 }
 
-function spheroStop() {
-	SpheroDriver.stop();
-	endOk(this.res);
-}
-
 function spheroRoll() {
   var params = this.req.body;
   var units = params.units;
   var direction = params.direction;
   console.log("Roll " + units + " units in direction " + direction);
   var response = this.res;
-	SpheroDriver.roll(units, direction, function(err) {
-    endOk(response);
+  SpheroDriver.roll(units, direction, function(error, data) {
+    endResponse(response, error, data);
   });
 }
 
 function spheroColor() {
   var color = this.req.body.color;
   console.log("Set color to " + color);
-  SpheroDriver.setColor(color, function(err) {
-    endOk(this.res);
+  SpheroDriver.setColor(color, function(error, data) {
+    endResponse(this.res, error, data);
   }.bind(this));
 }
 
 function spheroTurn() {
   var direction = this.req.body.direction;
   console.log("Turning " + direction);
-  SpheroDriver.turn(direction, function(err) {
-    endOk(this.res);
+  SpheroDriver.turn(direction, function(error, data) {
+    endResponse(this.res, error, data);
   }.bind(this));
 }
 
-function endOk(response, message) {
-  response.writeHead(200);
-  response.end();
+function endResponse(response, error, data) {
+  if (error) {
+    response.writeHead(500);
+    response.end(error);
+  } else {
+    response.writeHead(200);
+    response.end(JSON.stringify(data));
+  }
 }

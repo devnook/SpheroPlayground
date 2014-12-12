@@ -15,12 +15,11 @@ Cylon.robot({
   connection: {
       name: 'sphero',
       adaptor: 'sphero',
-//      port: '/dev/cu.Sphero-OYR-AMP-SPP'
+//      port: '/dev/tty.Sphero-RYR-AMP-SPP-6'
       port: '/dev/cu.Sphero-RRP-AMP-SPP'
   },
 //  device: { name: 'Sphero-RYR', driver: 'sphero' },
   device: { name: 'Sphero-RRP', driver: 'sphero' },
-//  device: { name: 'Sphero-OYR', driver: 'sphero' },
 
   name: ROBOT_NAME,
 
@@ -30,16 +29,25 @@ Cylon.robot({
   rolling : false,
 
   work: function(my) {
-    var white = true;
+    console.log('Setting up collision detection.');
+    my.sphero.detectCollisions();
+    my.sphero.on('collision', function() {
+      console.log("Ouch, collision!")
+      my.sphero.setColor('purple');
+      my.sphero.stop();
+      my.markCollision();
+    });
+
+    var black = true;
     every((0.5).second(), function(){
       if (!my.amIRolling()) {
         var color = my.readMyColor();
-        if (white) {
-          my.sphero.setColor('white');
+        if (black) {
+          my.sphero.setColor('black');
         } else {
           my.sphero.setColor(color);
         }
-        white = !white
+        black = !black
       }
     });
   },
@@ -103,18 +111,32 @@ Cylon.robot({
     after((units).seconds(), function() {
       console.log("Sphero stopping after " + units + " seconds");
       this.stop();
-      callback(null, {'message': "Sphero rolled " + units + " units " + direction});
+      var justHitSomething = this.hitSomething;
+      this.clearCollision();
+      message = "Sphero rolled " + units + " units " + direction;
+      if (justHitSomething) message = message + " but hit something on the way";
+      callback(null, {
+        'message': message,
+        'collision': justHitSomething,
+      });
     }.bind(this));
   },
 
   stop: function() {
     this.sphero.roll(0, this.myAngle, 0);
     this.stoppedRolling();
-  }
+  },
+
+  hitSomething: false,
+  markCollision: function() {
+    this.hitSomething = true;
+  },
+  clearCollision: function() {
+    this.hitSomething = false;
+  },
 });
 
 function spheroStart() {
-  console.log('aaa')
   Cylon.robots[ROBOT_NAME].on('ready', function() {
     spheroReady = true;
   });
