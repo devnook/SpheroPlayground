@@ -15,12 +15,12 @@ Cylon.robot({
   connection: {
       name: 'sphero',
       adaptor: 'sphero',
-      port: '/dev/cu.Sphero-OYR-AMP-SPP'
-//      port: '/dev/cu.Sphero-RRP-AMP-SPP'
+//      port: '/dev/cu.Sphero-OYR-AMP-SPP'
+      port: '/dev/cu.Sphero-RRP-AMP-SPP'
   },
 //  device: { name: 'Sphero-RYR', driver: 'sphero' },
-//  device: { name: 'Sphero-RRP', driver: 'sphero' },
-  device: { name: 'Sphero-OYR', driver: 'sphero' },
+  device: { name: 'Sphero-RRP', driver: 'sphero' },
+//  device: { name: 'Sphero-OYR', driver: 'sphero' },
 
   name: ROBOT_NAME,
 
@@ -117,8 +117,6 @@ function spheroStart() {
   console.log('aaa')
   Cylon.robots[ROBOT_NAME].on('ready', function() {
     spheroReady = true;
-
-    console.log('aaammmmmmmmmmm')
   });
   Cylon.start();
 }

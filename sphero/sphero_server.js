@@ -62,32 +62,28 @@ function spheroRoll() {
   var direction = params.direction;
   console.log("Roll " + units + " units in direction " + direction);
   var response = this.res;
-	SpheroDriver.roll(units, direction, function(err, message) {
-    endOk(response, message);
+	SpheroDriver.roll(units, direction, function(err) {
+    endOk(response);
   });
 }
 
 function spheroColor() {
   var color = this.req.body.color;
   console.log("Set color to " + color);
-  SpheroDriver.setColor(color, function(err, message) {
-    endOk(this.res, message);
+  SpheroDriver.setColor(color, function(err) {
+    endOk(this.res);
   }.bind(this));
 }
 
 function spheroTurn() {
   var direction = this.req.body.direction;
   console.log("Turning " + direction);
-  SpheroDriver.turn(direction, function(err, message) {
-    endOk(this.res, message);
+  SpheroDriver.turn(direction, function(err) {
+    endOk(this.res);
   }.bind(this));
 }
 
 function endOk(response, message) {
-  response.setHeader('Content-Type', 'application/json');
-
   response.writeHead(200);
-  console.log(message)
-  response.write(JSON.stringify(message));
   response.end();
 }
