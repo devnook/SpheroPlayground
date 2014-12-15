@@ -15,22 +15,25 @@ Cylon.robot({
   connection: {
       name: 'sphero',
       adaptor: 'sphero',
-      port: '/dev/tty.Sphero-RYR-AMP-SPP'
-  //    port: '/dev/cu.Sphero-RRP-AMP-SPP'
+      port: '/dev/cu.Sphero-OYR-AMP-SPP'
+   //   port: '/dev/cu.Sphero-RYR-AMP-SPP'
+   //   port: '/dev/cu.Sphero-RRP-AMP-SPP'
   },
-  device: { name: 'Sphero-RYR', driver: 'sphero' },
+  device: { name: 'Sphero-OYR', driver: 'sphero' },
+//  device: { name: 'Sphero-RYR', driver: 'sphero' },
 //  device: { name: 'Sphero-RRP', driver: 'sphero' },
 
   name: ROBOT_NAME,
 
   myAngle : 0,
   myColor : 'yellow',
-  mySpeed : 250,
+  mySpeed : 150,
   rolling : false,
 
   work: function(my) {
     console.log('Setting up collision detection.');
-    my.sphero.detectCollisions();
+//    my.sphero.detectCollisions();
+    my.sphero.configureCollisionDetection(0x01, 0x30, 0x30, 0x50, 0x50, 0x50)
     my.sphero.on('collision', function() {
       console.log("Ouch, collision!")
       my.sphero.setColor('purple');
@@ -40,7 +43,7 @@ Cylon.robot({
 
     var black = true;
     every((0.5).second(), function(){
-      if (!my.amIRolling()) {
+ //     if (!my.amIRolling()) {
         var color = my.readMyColor();
         if (black) {
           my.sphero.setColor('black');
@@ -48,7 +51,7 @@ Cylon.robot({
           my.sphero.setColor(color);
         }
         black = !black
-      }
+  //    }
     });
   },
 
@@ -107,23 +110,27 @@ Cylon.robot({
         + " for " + units + " seconds"
         + " in a " + rollAngle + " degree angle ");
     this.startedRolling();
-    this.sphero.roll(this.mySpeed, rollAngle, 2);
-    after((units).seconds(), function() {
-      console.log("Sphero stopping after " + units + " seconds");
-      this.stop();
-      var justHitSomething = this.hitSomething;
-      this.clearCollision();
-      message = "Sphero rolled " + units + " units " + direction;
-      if (justHitSomething) message = message + " but hit something on the way";
-      callback(null, {
-        'message': message,
-        'collision': justHitSomething,
-      });
+    this.sphero.roll(0, rollAngle, 1);
+    after((0.5).seconds(), function() {
+      this.sphero.roll(this.mySpeed, rollAngle, 2);
+      after((units).seconds(), function() {
+        console.log("Sphero stopping after " + units + " seconds");
+        this.stop(rollAngle);
+        var justHitSomething = this.hitSomething;
+        this.clearCollision();
+        message = "Sphero rolled " + units + " units " + direction;
+        if (justHitSomething) message = message + " but hit something on the way";
+        callback(null, {
+          'message': message,
+          'collision': justHitSomething,
+        });
+      }.bind(this));
     }.bind(this));
   },
 
-  stop: function() {
-    this.sphero.roll(0, this.myAngle, 0);
+  stop: function(rollAngle) {
+    if (rollAngle == null) rollAngle = this.myAngle;
+    this.sphero.roll(0, rollAngle, 0);
     this.stoppedRolling();
   },
 
